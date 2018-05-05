@@ -81,25 +81,90 @@ public class Answer {
 
         List<StatisticsItem> oldPlunoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.PLUNO);
-        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.PLUNO, oldPlunoStatistics);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.PLUNO, oldPlunoStatistics, false);
         List<StatisticsItem> newPlunoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.PLUNO);
-        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.PLUNO, newPlunoStatistics);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.PLUNO, newPlunoStatistics, false);
         List<StatisticsItem> oldDptnoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.DPTNO);
-        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.DPTNO, oldDptnoStatistics);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.DPTNO, oldDptnoStatistics, false);
         List<StatisticsItem> newDptnoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.DPTNO);
-        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.DPTNO, newDptnoStatistics);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.DPTNO, newDptnoStatistics, false);
         List<StatisticsItem> oldBndnoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.BNDNO);
-        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.BNDNO, oldBndnoStatistics);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.BNDNO, oldBndnoStatistics, false);
         List<StatisticsItem> newBndnoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.BNDNO);
-        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics, false);
     }
 
     private static void answera2() {
+        FpGrowthSolver fpGrowthSolver = new FpGrowthSolver();
+        StatisticsCollector statisticsCollector = new StatisticsCollector();
+        fpGrowthSolver.setStatisticsCollector(statisticsCollector);
+        fpGrowthSolver.readData(RawDataType.OLD_DATA)
+                .solveIntegrated(ItemType.PLUNO, 2)
+                .solveIntegrated(ItemType.PLUNO, 4)
+                .solveIntegrated(ItemType.PLUNO, 6)
+                .solveIntegrated(ItemType.PLUNO, 8)
+                .solveIntegrated(ItemType.PLUNO, 10)
+                .solveIntegrated(ItemType.PLUNO, 12)
+                .solveIntegrated(ItemType.DPTNO, 2)
+                .solveIntegrated(ItemType.DPTNO, 4)
+                .solveIntegrated(ItemType.DPTNO, 6)
+                .solveIntegrated(ItemType.DPTNO, 8)
+                .solveIntegrated(ItemType.DPTNO, 10)
+                .solveIntegrated(ItemType.DPTNO, 12)
+                .solveIntegrated(ItemType.BNDNO, 2)
+                .solveIntegrated(ItemType.BNDNO, 4)
+                .solveIntegrated(ItemType.BNDNO, 6)
+                .solveIntegrated(ItemType.BNDNO, 8)
+                .solveIntegrated(ItemType.BNDNO, 10)
+                .solveIntegrated(ItemType.BNDNO, 12)
+                .cleanData().readData(RawDataType.NEW_DATA)
+                .solveIntegrated(ItemType.PLUNO, 2)
+                .solveIntegrated(ItemType.PLUNO, 4)
+                .solveIntegrated(ItemType.PLUNO, 6)
+                .solveIntegrated(ItemType.PLUNO, 8)
+                .solveIntegrated(ItemType.PLUNO, 10)
+                .solveIntegrated(ItemType.PLUNO, 12)
+                .solveIntegrated(ItemType.DPTNO, 2)
+                .solveIntegrated(ItemType.DPTNO, 4)
+                .solveIntegrated(ItemType.DPTNO, 6)
+                .solveIntegrated(ItemType.DPTNO, 8)
+                .solveIntegrated(ItemType.DPTNO, 10)
+                .solveIntegrated(ItemType.DPTNO, 12)
+                .solveIntegrated(ItemType.BNDNO, 2)
+                .solveIntegrated(ItemType.BNDNO, 4)
+                .solveIntegrated(ItemType.BNDNO, 6)
+                .solveIntegrated(ItemType.BNDNO, 8)
+                .solveIntegrated(ItemType.BNDNO, 10)
+                .solveIntegrated(ItemType.BNDNO, 12);
+
+        List<StatisticsItem> statisticsItemList = statisticsCollector.getStatisticsItemList();
+        for (StatisticsItem statisticsItem : statisticsItemList) {
+            logger.info(new GsonBuilder().create().toJson(statisticsItem));
+        }
+
+        List<StatisticsItem> oldPlunoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.PLUNO);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.PLUNO, oldPlunoStatistics, true);
+        List<StatisticsItem> newPlunoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.PLUNO);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.PLUNO, newPlunoStatistics, true);
+        List<StatisticsItem> oldDptnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.DPTNO);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.DPTNO, oldDptnoStatistics, true);
+        List<StatisticsItem> newDptnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.DPTNO);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.DPTNO, newDptnoStatistics, true);
+        List<StatisticsItem> oldBndnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.BNDNO);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.BNDNO, oldBndnoStatistics, true);
+        List<StatisticsItem> newBndnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.BNDNO);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics, true);
     }
 
     private static void answerb1() {

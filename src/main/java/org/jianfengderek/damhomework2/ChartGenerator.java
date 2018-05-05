@@ -16,16 +16,18 @@ public class ChartGenerator {
 
     public static void generateCharts(RawDataType rawDataType,
                                       ItemType itemType,
-                                      List<StatisticsItem> statisticsItemList) {
-        generateTimeChart(rawDataType, itemType, statisticsItemList);
-        generateMemoryChart(rawDataType, itemType, statisticsItemList);
+                                      List<StatisticsItem> statisticsItemList,
+                                      boolean integrated) {
+        generateTimeChart(rawDataType, itemType, statisticsItemList, integrated);
+        generateMemoryChart(rawDataType, itemType, statisticsItemList, integrated);
     }
 
     private static void generateTimeChart(RawDataType rawDataType,
                                           ItemType itemType,
-                                          List<StatisticsItem> statisticsItemList) {
+                                          List<StatisticsItem> statisticsItemList,
+                                          boolean integrated) {
         // Build the title of the chart
-        StringBuilder title = buildTitle(rawDataType, itemType);
+        StringBuilder title = buildTitle(rawDataType, itemType, integrated);
         if (null == title) {
             return;
         }
@@ -111,9 +113,10 @@ public class ChartGenerator {
 
     private static void generateMemoryChart(RawDataType rawDataType,
                                             ItemType itemType,
-                                            List<StatisticsItem> statisticsItemList) {
+                                            List<StatisticsItem> statisticsItemList,
+                                            boolean integrated) {
         // Build the title of the chart
-        StringBuilder title = buildTitle(rawDataType, itemType);
+        StringBuilder title = buildTitle(rawDataType, itemType, integrated);
         if (null == title) {
             return;
         }
@@ -197,8 +200,13 @@ public class ChartGenerator {
         }
     }
 
-    private static StringBuilder buildTitle(RawDataType rawDataType, ItemType itemType) {
+    private static StringBuilder buildTitle(RawDataType rawDataType,
+                                            ItemType itemType,
+                                            boolean integrated) {
         StringBuilder title = new StringBuilder();
+        if (integrated) {
+            title.append("Integrated ");
+        }
         switch (rawDataType) {
             case OLD_DATA: {
                 title.append("Old");

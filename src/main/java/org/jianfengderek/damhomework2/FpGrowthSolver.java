@@ -369,4 +369,159 @@ public class FpGrowthSolver {
         return this;
     }
 
+    public FpGrowthSolver solveIntegrated(ItemType itemType, int minsup) {
+        String inputFilename;
+        String outputFilename;
+        switch (itemType) {
+            case PLUNO: {
+                inputFilename = "input_pluno_minsup_" + minsup + ".txt";
+                outputFilename = "output_pluno_minsup_" + minsup + ".txt";
+
+                break;
+            }
+
+            case DPTNO: {
+                inputFilename = "input_dptno_minsup_" + minsup + ".txt";
+                outputFilename = "output_dptno_minsup_" + minsup + ".txt";
+
+                break;
+            }
+
+            case BNDNO: {
+                inputFilename = "input_bndno_minsup_" + minsup + ".txt";
+                outputFilename = "output_bndno_minsup_" + minsup + ".txt";
+
+                break;
+            }
+
+            default: {
+                logger.error("Illegal ItemType: " + itemType);
+
+                return this;
+            }
+        }
+        switch (rawDataType) {
+            case OLD_DATA: {
+                inputFilename = "old_" + inputFilename;
+                outputFilename = "old_" + outputFilename;
+
+                break;
+            }
+
+            case NEW_DATA: {
+                inputFilename = "new_" + inputFilename;
+                outputFilename = "new_" + outputFilename;
+
+                break;
+            }
+
+            default: {
+                logger.error("Illegal RawDataType: " + rawDataType);
+
+                return this;
+            }
+        }
+        inputFilename = "integrated_" + inputFilename;
+        outputFilename = "integrated_" + outputFilename;
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(inputFilename))) {
+            for (Map.Entry<String, List<Transaction>> entry : trainingTransactionListMap.entrySet()) {
+                List<Transaction> transactionList = entry.getValue();
+
+                List<Product> productList = new ArrayList<>();
+                for (Transaction transaction : transactionList) {
+                    productList.addAll(transaction.getProductList());
+                }
+
+                boolean empty = true;
+                StringBuilder stringBuilder = new StringBuilder();
+                Set<String> itemSet = new HashSet<>();
+                for (Product product : productList) {
+                    String item;
+                    switch (itemType) {
+                        case PLUNO: {
+                            item = product.getPluno();
+
+                            break;
+                        }
+
+                        case DPTNO: {
+                            item = product.getDptno();
+
+                            break;
+                        }
+
+                        case BNDNO: {
+                            item = product.getBndno();
+
+                            break;
+                        }
+
+                        default: {
+                            logger.error("Illegal ItemType: " + itemType);
+
+                            return this;
+                        }
+                    }
+
+                    if ((item != null) && !item.isEmpty()) {
+                        empty = false;
+                        // For the stupid format of raw data
+                        if (ItemType.BNDNO == itemType) {
+                            itemSet.add(String.valueOf(Double.valueOf(item).intValue()));
+                        } else {
+                            itemSet.add(item);
+                        }
+                    }
+                }
+                // If the line is empty, skip this line
+                if (empty) {
+                    continue;
+                }
+
+                for (String item : itemSet) {
+                    stringBuilder.append(item).append(" ");
+                }
+                bufferedWriter.write(stringBuilder.substring(0, stringBuilder.length() - 1));
+                bufferedWriter.write("\n");
+            }
+        } catch (IOException e) {
+            logger.error("e.getMessage() = " + e.getMessage());
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            String command = "java -jar spmf.jar run " +
+                    "FPGrowth_itemsets " + inputFilename + " " + outputFilename + " " +
+                    String.format("%.2f", minsup * 100.0 / trainingTransactionListMap.size()) + "%";
+            logger.info("Executing the command: \"" + command + "\"");
+            Process process = runtime.exec(command);
+
+            BufferedReader bufferedReader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            List<String> outputLineList = new ArrayList<>();
+            while ((line = bufferedReader.readLine()) != null) {
+                logger.info(line);
+                outputLineList.add(line);
+            }
+
+            int exitVal = process.waitFor();
+
+            // If the process exits with no error, collect the statistics
+            if (0 == exitVal) {
+                if (statisticsCollector != null) {
+                    statisticsCollector.collect(rawDataType, itemType, minsup, outputLineList);
+                }
+            }
+
+            System.out.println("Process exited with code " + exitVal);
+        } catch (Exception exception) {
+            logger.error("exception.getMessage() = " + exception.getMessage());
+        }
+
+        return this;
+    }
+
 }
