@@ -18,6 +18,20 @@ public class Answer {
 
         logger.info("This is my answer to homework2 of the course Data Analysis and Mining.");
 
+        if ("a1".equals(args[0])) {
+            answera1();
+        } else if ("a2".equals(args[0])) {
+            answera2();
+        } else if ("b1".equals(args[0])) {
+            answerb1();
+        } else if ("b2".equals(args[0])) {
+            answerb2();
+        } else {
+            logger.warn("Illegal parameter.");
+        }
+    }
+
+    private static void answera1() {
         FpGrowthSolver fpGrowthSolver = new FpGrowthSolver();
         StatisticsCollector statisticsCollector = new StatisticsCollector();
         fpGrowthSolver.setStatisticsCollector(statisticsCollector);
@@ -83,6 +97,15 @@ public class Answer {
         List<StatisticsItem> newBndnoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.BNDNO);
         ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics);
+    }
+
+    private static void answera2() {
+    }
+
+    private static void answerb1() {
+    }
+
+    private static void answerb2() {
     }
 
 }
