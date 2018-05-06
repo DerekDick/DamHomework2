@@ -38,6 +38,11 @@ public class PrefixSpanSolver {
     private Map<String, Transaction> trainingTransactionMap = new HashMap<>();
 
     /**
+     * Key: uid, Value: {@link Transaction}.
+     */
+    private Map<String, Transaction> truthTransactionMap = new HashMap<>();
+
+    /**
      * Key: vipno, Value: {@link List}&lt;{@link Transaction}&gt;.
      */
     private Map<String, List<Transaction>> transactionListMap = new HashMap<>();
@@ -46,6 +51,11 @@ public class PrefixSpanSolver {
      * Key: vipno, Value: {@link List}&lt;{@link Transaction}&gt;.
      */
     private Map<String, List<Transaction>> trainingTransactionListMap = new HashMap<>();
+
+    /**
+     * Key: vipno, Value: {@link List}&lt;{@link Transaction}&gt;.
+     */
+    private Map<String, List<Transaction>> truthTransactionListMap = new HashMap<>();
 
     private RawDataType rawDataType;
 
@@ -183,15 +193,22 @@ public class PrefixSpanSolver {
 
             });
 
-            // Get the transaction list for training
+            // Divide the transaction list into training and truth
             List<Transaction> trainingTransactionList = new ArrayList<>();
-            for (int i = 0; i < transactionList.size() * 0.6 - 1; i++) {
+            List<Transaction> truthTransactionList = new ArrayList<>();
+            int i = 0;
+            for (; i < transactionList.size() * 0.6 - 1; i++) {
                 trainingTransactionList.add(transactionList.get(i));
+            }
+            for (; i < transactionList.size(); i++) {
+                truthTransactionList.add(transactionList.get(i));
             }
 
             trainingTransactionListMap.put(vipno, trainingTransactionList);
+            truthTransactionListMap.put(vipno, truthTransactionList);
         }
         logger.info("trainingTransactionListMap.size() = " + trainingTransactionListMap.size());
+        logger.info("truthTransactionListMap.size() = " + truthTransactionListMap.size());
 
         for (Map.Entry<String, List<Transaction>> entry : trainingTransactionListMap.entrySet()) {
             List<Transaction> trainingTransactionList = entry.getValue();
@@ -200,6 +217,14 @@ public class PrefixSpanSolver {
             }
         }
         logger.info("trainingTransactionMap.size() = " + trainingTransactionMap.size());
+
+        for (Map.Entry<String, List<Transaction>> entry : truthTransactionListMap.entrySet()) {
+            List<Transaction> truthTransactionList = entry.getValue();
+            for (Transaction transaction : truthTransactionList) {
+                truthTransactionMap.put(transaction.getUid(), transaction);
+            }
+        }
+        logger.info("truthTransactionMap.size() = " + truthTransactionMap.size());
 
         return this;
     }
@@ -214,6 +239,8 @@ public class PrefixSpanSolver {
         transactionListMap = new HashMap<>();
         trainingTransactionMap = new HashMap<>();
         trainingTransactionListMap = new HashMap<>();
+        truthTransactionMap = new HashMap<>();
+        truthTransactionListMap = new HashMap<>();
         rawDataType = RawDataType.NONE;
         return this;
     }
@@ -511,6 +538,132 @@ public class PrefixSpanSolver {
         } catch (Exception exception) {
             logger.error("Exception: ", exception);
         }
+
+        return this;
+    }
+
+    public PrefixSpanSolver validate(ItemType itemType, int minsup) {
+        String outputFilename;
+        switch (itemType) {
+            case PLUNO: {
+                outputFilename = "output_pluno_minsup_" + minsup + ".txt";
+
+                break;
+            }
+
+            case DPTNO: {
+                outputFilename = "output_dptno_minsup_" + minsup + ".txt";
+
+                break;
+            }
+
+            case BNDNO: {
+                outputFilename = "output_bndno_minsup_" + minsup + ".txt";
+
+                break;
+            }
+
+            default: {
+                logger.error("Illegal ItemType: " + itemType);
+
+                return this;
+            }
+        }
+        switch (rawDataType) {
+            case OLD_DATA: {
+                outputFilename = "old_" + outputFilename;
+
+                break;
+            }
+
+            case NEW_DATA: {
+                outputFilename = "new_" + outputFilename;
+
+                break;
+            }
+
+            default: {
+                logger.error("Illegal RawDataType: " + rawDataType);
+
+                return this;
+            }
+        }
+        outputFilename = "prefixspan_" + outputFilename;
+        outputFilename = "integrated_" + outputFilename;
+
+        int validCount = 0;
+        int invalidCount = 0;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(outputFilename))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                boolean isSequenceValid = false;
+                List<Transaction> resultTransactionList = new ArrayList<>();
+
+                String[] strArr = line.split("-1");
+                for (String str : strArr) {
+                    // Skip the last element
+                    if (str.trim().startsWith("#")) {
+                        continue;
+                    }
+
+                    Transaction transaction = new Transaction();
+                    transaction.setProductList(new ArrayList<>());
+
+                    String[] itemArr = str.trim().split(" ");
+                    for (String item : itemArr) {
+                        Product product = new Product();
+                        switch (itemType) {
+                            case PLUNO: {
+                                product.setPluno(item);
+
+                                break;
+                            }
+
+                            case DPTNO: {
+                                product.setDptno(item);
+
+                                break;
+                            }
+
+                            case BNDNO: {
+                                product.setBndno(item);
+
+                                break;
+                            }
+
+                            default: {
+                                logger.error("Unknown ItemType: " + itemType);
+
+                                break;
+                            }
+                        }
+
+                        transaction.getProductList().add(product);
+                    }
+                    resultTransactionList.add(transaction);
+                }
+
+                for (List<Transaction> truthTransactionList : truthTransactionListMap.values()) {
+                    if (Validator.validate(resultTransactionList, truthTransactionList, itemType)) {
+                        isSequenceValid = true;
+
+                        break;
+                    }
+                }
+
+                if (isSequenceValid) {
+                    validCount++;
+                } else {
+                    invalidCount++;
+                }
+            }
+        } catch (IOException e) {
+            logger.error("IOException", e);
+        }
+
+        logger.info("RawDataType: " + rawDataType + ", ItemType: " + itemType +
+                ", validCount = " + validCount + ", invalidCount = " + invalidCount +
+                ", confidence = " + validCount * 100.0 / (validCount + invalidCount) + "%");
 
         return this;
     }

@@ -2,11 +2,19 @@ package org.jianfengderek.damhomework2;
 
 import com.google.common.base.Objects;
 import com.google.gson.GsonBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Transaction implements Serializable {
+
+    // For logging
+    private static final Logger logger = LoggerFactory.getLogger(Transaction.class);
 
     private String uid;
 
@@ -76,6 +84,27 @@ public class Transaction implements Serializable {
     @Override
     public String toString() {
         return new GsonBuilder().create().toJson(this);
+    }
+
+    public boolean isSubTransactionOf(Transaction parentTransaction, ItemType itemType) {
+        return parentTransaction.itemSet(itemType).containsAll(itemSet(itemType));
+    }
+
+    private Set<String> itemSet(ItemType itemType) {
+        Set<String> itemSet = new HashSet<>();
+        for (Product product : productList) {
+            String item = product.item(itemType);
+            if ((item != null) && !item.isEmpty()) {
+                // For the stupid format of raw data
+                if (ItemType.BNDNO == itemType) {
+                    itemSet.add(String.valueOf(Double.valueOf(item).intValue()));
+                } else {
+                    itemSet.add(item);
+                }
+            }
+        }
+
+        return itemSet;
     }
 
 }

@@ -30,10 +30,8 @@ public class Answer {
             answerb1();
         } else if ("b2".equals(args[0])) {
             answerb2();
-        } else if ("c1".equals(args[0])) {
-            answerc1();
-        } else if ("c2".equals(args[0])) {
-            answerc2();
+        } else if ("c".equals(args[0])) {
+            answerc();
         } else {
             logger.warn("Illegal parameter.");
         }
@@ -337,10 +335,25 @@ public class Answer {
                 true, Algorithm.PREFIX_SPAN);
     }
 
-    private static void answerc1() {
-    }
+    private static void answerc() {
+        answerb2();
 
-    private static void answerc2() {
+        PrefixSpanSolver prefixSpanSolver = new PrefixSpanSolver();
+        prefixSpanSolver
+                .readData(RawDataType.OLD_DATA)
+                .validate(ItemType.PLUNO, 2)
+                .validate(ItemType.PLUNO, 4)
+                .validate(ItemType.PLUNO, 6)
+                .validate(ItemType.PLUNO, 8)
+                .validate(ItemType.PLUNO, 10)
+                .validate(ItemType.PLUNO, 12)
+                .readData(RawDataType.NEW_DATA)
+                .validate(ItemType.PLUNO, 2)
+                .validate(ItemType.PLUNO, 4)
+                .validate(ItemType.PLUNO, 6)
+                .validate(ItemType.PLUNO, 8)
+                .validate(ItemType.PLUNO, 10)
+                .validate(ItemType.PLUNO, 12);
     }
 
 }
