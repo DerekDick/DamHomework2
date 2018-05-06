@@ -16,18 +16,20 @@ public class ChartGenerator {
 
     public static void generateCharts(RawDataType rawDataType,
                                       ItemType itemType,
-                                      List<StatisticsItem> statisticsItemList,
-                                      boolean integrated) {
-        generateTimeChart(rawDataType, itemType, statisticsItemList, integrated);
-        generateMemoryChart(rawDataType, itemType, statisticsItemList, integrated);
+                                      List<? extends StatisticsItem> statisticsItemList,
+                                      boolean integrated,
+                                      Algorithm algorithm) {
+        generateTimeChart(rawDataType, itemType, statisticsItemList, integrated, algorithm);
+        generateMemoryChart(rawDataType, itemType, statisticsItemList, integrated, algorithm);
     }
 
     private static void generateTimeChart(RawDataType rawDataType,
                                           ItemType itemType,
-                                          List<StatisticsItem> statisticsItemList,
-                                          boolean integrated) {
+                                          List<? extends StatisticsItem> statisticsItemList,
+                                          boolean integrated,
+                                          Algorithm algorithm) {
         // Build the title of the chart
-        StringBuilder title = buildTitle(rawDataType, itemType, integrated);
+        StringBuilder title = buildTitle(rawDataType, itemType, integrated, algorithm);
         if (null == title) {
             return;
         }
@@ -113,10 +115,11 @@ public class ChartGenerator {
 
     private static void generateMemoryChart(RawDataType rawDataType,
                                             ItemType itemType,
-                                            List<StatisticsItem> statisticsItemList,
-                                            boolean integrated) {
+                                            List<? extends StatisticsItem> statisticsItemList,
+                                            boolean integrated,
+                                            Algorithm algorithm) {
         // Build the title of the chart
-        StringBuilder title = buildTitle(rawDataType, itemType, integrated);
+        StringBuilder title = buildTitle(rawDataType, itemType, integrated, algorithm);
         if (null == title) {
             return;
         }
@@ -202,8 +205,28 @@ public class ChartGenerator {
 
     private static StringBuilder buildTitle(RawDataType rawDataType,
                                             ItemType itemType,
-                                            boolean integrated) {
+                                            boolean integrated,
+                                            Algorithm algorithm) {
         StringBuilder title = new StringBuilder();
+        switch (algorithm) {
+            case FP_GROWTH: {
+                title.append("FP-Growth: ");
+
+                break;
+            }
+
+            case PREFIX_SPAN: {
+                title.append("PrefixSpan: ");
+
+                break;
+            }
+
+            default: {
+                logger.error("Illegal Algorithm: " + algorithm);
+
+                return null;
+            }
+        }
         if (integrated) {
             title.append("Integrated ");
         }

@@ -1,16 +1,20 @@
-package org.jianfengderek.damhomework2;
+package org.jianfengderek.damhomework2.fpgrowth;
+
+import org.jianfengderek.damhomework2.ItemType;
+import org.jianfengderek.damhomework2.RawDataType;
+import org.jianfengderek.damhomework2.StatisticsItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatisticsCollector {
+public class FpGrowthStatisticsCollector {
 
-    private List<StatisticsItem> statisticsItemList;
+    private List<FpGrowthStatisticsItem> statisticsItemList;
 
-    public StatisticsCollector() {
+    public FpGrowthStatisticsCollector() {
     }
 
-    public List<StatisticsItem> getStatisticsItemList() {
+    public List<FpGrowthStatisticsItem> getStatisticsItemList() {
         return statisticsItemList;
     }
 
@@ -36,9 +40,10 @@ public class StatisticsCollector {
         Integer frequentItemSetCount = Integer.valueOf(line_frequentItemSetCount.substring(27,
                 line_frequentItemSetCount.length()));
         String line_totalTimeInMillisSecond = outputLineList.get(5);
-        Integer totalTimeInMillisSecond = Integer.valueOf(line_totalTimeInMillisSecond.substring(14, line_totalTimeInMillisSecond.length() - 3));
+        Integer totalTimeInMillisSecond = Integer.valueOf(line_totalTimeInMillisSecond.substring(14,
+                line_totalTimeInMillisSecond.length() - 3));
 
-        StatisticsItem statisticsItem = new StatisticsItem(
+        FpGrowthStatisticsItem statisticsItem = new FpGrowthStatisticsItem(
                 rawDataType,
                 itemType,
                 minsup,
@@ -60,9 +65,10 @@ public class StatisticsCollector {
      * @param itemType The type of the item.
      * @return The list of all the statistics by rawDataType and itemType.
      */
-    public List<StatisticsItem> extractStatistics(RawDataType rawDataType, ItemType itemType) {
-        List<StatisticsItem> resultList = new ArrayList<>();
-        for (StatisticsItem statisticsItem : statisticsItemList) {
+    public List<? extends StatisticsItem> extractStatistics(RawDataType rawDataType,
+                                                            ItemType itemType) {
+        List<FpGrowthStatisticsItem> resultList = new ArrayList<>();
+        for (FpGrowthStatisticsItem statisticsItem : statisticsItemList) {
             if ((rawDataType == statisticsItem.getRawDataType()) &&
                     itemType == statisticsItem.getItemType()) {
                 resultList.add(statisticsItem);

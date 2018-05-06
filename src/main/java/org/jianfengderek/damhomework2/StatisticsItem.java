@@ -13,11 +13,7 @@ public class StatisticsItem implements Serializable {
 
     private Integer minsup;
 
-    private Integer transactionCount;
-
     private Double maxMemoryUsage;
-
-    private Integer frequentItemSetsCount;
 
     private Integer totalTimeInMillisSecond;
 
@@ -27,16 +23,12 @@ public class StatisticsItem implements Serializable {
     public StatisticsItem(RawDataType rawDataType,
                           ItemType itemType,
                           Integer minsup,
-                          Integer transactionCount,
                           Double maxMemoryUsage,
-                          Integer frequentItemSetsCount,
                           Integer totalTimeInMillisSecond) {
         this.rawDataType = rawDataType;
         this.itemType = itemType;
         this.minsup = minsup;
-        this.transactionCount = transactionCount;
         this.maxMemoryUsage = maxMemoryUsage;
-        this.frequentItemSetsCount = frequentItemSetsCount;
         this.totalTimeInMillisSecond = totalTimeInMillisSecond;
     }
 
@@ -64,28 +56,12 @@ public class StatisticsItem implements Serializable {
         this.minsup = minsup;
     }
 
-    public Integer getTransactionCount() {
-        return transactionCount;
-    }
-
-    public void setTransactionCount(Integer transactionCount) {
-        this.transactionCount = transactionCount;
-    }
-
     public Double getMaxMemoryUsage() {
         return maxMemoryUsage;
     }
 
     public void setMaxMemoryUsage(Double maxMemoryUsage) {
         this.maxMemoryUsage = maxMemoryUsage;
-    }
-
-    public Integer getFrequentItemSetsCount() {
-        return frequentItemSetsCount;
-    }
-
-    public void setFrequentItemSetsCount(Integer frequentItemSetsCount) {
-        this.frequentItemSetsCount = frequentItemSetsCount;
     }
 
     public Integer getTotalTimeInMillisSecond() {
@@ -104,9 +80,7 @@ public class StatisticsItem implements Serializable {
         return rawDataType == that.rawDataType &&
                 itemType == that.itemType &&
                 Objects.equal(minsup, that.minsup) &&
-                Objects.equal(transactionCount, that.transactionCount) &&
                 Objects.equal(maxMemoryUsage, that.maxMemoryUsage) &&
-                Objects.equal(frequentItemSetsCount, that.frequentItemSetsCount) &&
                 Objects.equal(totalTimeInMillisSecond, that.totalTimeInMillisSecond);
     }
 
@@ -115,9 +89,7 @@ public class StatisticsItem implements Serializable {
         return Objects.hashCode(rawDataType,
                 itemType,
                 minsup,
-                transactionCount,
                 maxMemoryUsage,
-                frequentItemSetsCount,
                 totalTimeInMillisSecond);
     }
 

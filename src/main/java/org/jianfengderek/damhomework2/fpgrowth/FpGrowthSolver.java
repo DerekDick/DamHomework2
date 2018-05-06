@@ -1,5 +1,9 @@
-package org.jianfengderek.damhomework2;
+package org.jianfengderek.damhomework2.fpgrowth;
 
+import org.jianfengderek.damhomework2.ItemType;
+import org.jianfengderek.damhomework2.Product;
+import org.jianfengderek.damhomework2.RawDataType;
+import org.jianfengderek.damhomework2.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +49,7 @@ public class FpGrowthSolver {
 
     private RawDataType rawDataType;
 
-    private StatisticsCollector statisticsCollector;
+    private FpGrowthStatisticsCollector statisticsCollector;
 
     public FpGrowthSolver() {
     }
@@ -58,11 +62,11 @@ public class FpGrowthSolver {
         this.transactionMap = transactionMap;
     }
 
-    public StatisticsCollector getStatisticsCollector() {
+    public FpGrowthStatisticsCollector getStatisticsCollector() {
         return statisticsCollector;
     }
 
-    public void setStatisticsCollector(StatisticsCollector statisticsCollector) {
+    public void setStatisticsCollector(FpGrowthStatisticsCollector statisticsCollector) {
         this.statisticsCollector = statisticsCollector;
     }
 
@@ -226,7 +230,7 @@ public class FpGrowthSolver {
         String outputFilename;
         switch (itemType) {
             case PLUNO: {
-                inputFilename = "input_pluno_minsup_" + minsup + ".txt";
+                inputFilename = "input__pluno_minsup_" + minsup + ".txt";
                 outputFilename = "output_pluno_minsup_" + minsup + ".txt";
 
                 break;
@@ -273,7 +277,10 @@ public class FpGrowthSolver {
                 return this;
             }
         }
+        inputFilename = "fpgrowth_" + inputFilename;
+        outputFilename = "fpgrowth_" + outputFilename;
 
+        int totalNumber = trainingTransactionMap.size();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(inputFilename))) {
             for (Map.Entry<String, Transaction> entry : trainingTransactionMap.entrySet()) {
                 Transaction transaction = entry.getValue();
@@ -321,6 +328,8 @@ public class FpGrowthSolver {
                 }
                 // If the line is empty, skip this line
                 if (empty) {
+                    totalNumber--;
+
                     continue;
                 }
 
@@ -338,7 +347,7 @@ public class FpGrowthSolver {
         try {
             String command = "java -jar spmf.jar run " +
                     "FPGrowth_itemsets " + inputFilename + " " + outputFilename + " " +
-                    String.format("%.2f", minsup * 100.0 / trainingTransactionMap.size()) + "%";
+                    String.format("%f", minsup * 100.0 / totalNumber) + "%";
             logger.info("Executing the command: \"" + command + "\"");
             Process process = runtime.exec(command);
 
@@ -421,9 +430,12 @@ public class FpGrowthSolver {
                 return this;
             }
         }
+        inputFilename = "fpgrowth_" + inputFilename;
+        outputFilename = "fpgrowth_" + outputFilename;
         inputFilename = "integrated_" + inputFilename;
         outputFilename = "integrated_" + outputFilename;
 
+        int totalNumber = trainingTransactionListMap.size();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(inputFilename))) {
             for (Map.Entry<String, List<Transaction>> entry : trainingTransactionListMap.entrySet()) {
                 List<Transaction> transactionList = entry.getValue();
@@ -476,6 +488,8 @@ public class FpGrowthSolver {
                 }
                 // If the line is empty, skip this line
                 if (empty) {
+                    totalNumber--;
+
                     continue;
                 }
 
@@ -493,7 +507,7 @@ public class FpGrowthSolver {
         try {
             String command = "java -jar spmf.jar run " +
                     "FPGrowth_itemsets " + inputFilename + " " + outputFilename + " " +
-                    String.format("%.2f", minsup * 100.0 / trainingTransactionListMap.size()) + "%";
+                    String.format("%f", minsup * 100.0 / totalNumber) + "%";
             logger.info("Executing the command: \"" + command + "\"");
             Process process = runtime.exec(command);
 
