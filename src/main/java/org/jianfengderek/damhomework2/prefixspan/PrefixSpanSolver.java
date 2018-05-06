@@ -428,66 +428,53 @@ public class PrefixSpanSolver {
         inputFilename = "integrated_" + inputFilename;
         outputFilename = "integrated_" + outputFilename;
 
+        int totalNumber = trainingTransactionListMap.size();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(inputFilename))) {
             for (Map.Entry<String, List<Transaction>> entry : trainingTransactionListMap.entrySet()) {
                 List<Transaction> transactionList = entry.getValue();
 
-                List<Product> productList = new ArrayList<>();
-                for (Transaction transaction : transactionList) {
-                    productList.addAll(transaction.getProductList());
-                }
+                // Sort the transaction list by sldat
+                Collections.sort(transactionList, new Comparator<Transaction>() {
+
+                    @Override
+                    public int compare(Transaction o1, Transaction o2) {
+                        return o1.getSldat().compareTo(o2.getSldat());
+                    }
+
+                });
 
                 boolean empty = true;
                 StringBuilder stringBuilder = new StringBuilder();
-                Set<String> itemSet = new HashSet<>();
-                for (Product product : productList) {
-                    String item;
-                    switch (itemType) {
-                        case PLUNO: {
-                            item = product.getPluno();
-
-                            break;
-                        }
-
-                        case DPTNO: {
-                            item = product.getDptno();
-
-                            break;
-                        }
-
-                        case BNDNO: {
-                            item = product.getBndno();
-
-                            break;
-                        }
-
-                        default: {
-                            logger.error("Illegal ItemType: " + itemType);
-
-                            return this;
+                for (Transaction transaction : transactionList) {
+                    Set<String> itemSet = new HashSet<>();
+                    for (Product product : transaction.getProductList()) {
+                        String item = product.item(itemType);
+                        if ((item != null) && !item.isEmpty()) {
+                            empty = false;
+                            // For the stupid format of raw data
+                            if (ItemType.BNDNO == itemType) {
+                                itemSet.add(String.valueOf(Double.valueOf(item).intValue()));
+                            } else {
+                                itemSet.add(item);
+                            }
                         }
                     }
 
-                    if ((item != null) && !item.isEmpty()) {
-                        empty = false;
-                        // For the stupid format of raw data
-                        if (ItemType.BNDNO == itemType) {
-                            itemSet.add(String.valueOf(Double.valueOf(item).intValue()));
-                        } else {
-                            itemSet.add(item);
-                        }
+                    for (String item : itemSet) {
+                        stringBuilder.append(item).append(" ");
                     }
+                    stringBuilder.append("-1 ");
                 }
-                // If the line is empty, skip this line
+
+                // If this line is empty
                 if (empty) {
+                    totalNumber--;
+
                     continue;
                 }
 
-                for (String item : itemSet) {
-                    stringBuilder.append(item).append(" ");
-                }
-                bufferedWriter.write(stringBuilder.substring(0, stringBuilder.length() - 1));
-                bufferedWriter.write("\n");
+                stringBuilder.append("-2\n");
+                bufferedWriter.write(stringBuilder.toString());
             }
         } catch (IOException e) {
             logger.error("e.getMessage() = " + e.getMessage());

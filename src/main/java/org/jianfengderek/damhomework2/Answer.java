@@ -4,10 +4,8 @@ import com.google.gson.GsonBuilder;
 import org.apache.log4j.BasicConfigurator;
 import org.jianfengderek.damhomework2.fpgrowth.FpGrowthSolver;
 import org.jianfengderek.damhomework2.fpgrowth.FpGrowthStatisticsCollector;
-import org.jianfengderek.damhomework2.fpgrowth.FpGrowthStatisticsItem;
 import org.jianfengderek.damhomework2.prefixspan.PrefixSpanSolver;
 import org.jianfengderek.damhomework2.prefixspan.PrefixSpanStatisticsCollector;
-import org.jianfengderek.damhomework2.prefixspan.PrefixSpanStatisticsItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,6 +235,81 @@ public class Answer {
         List<? extends StatisticsItem> oldPlunoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.PLUNO);
         ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.PLUNO, oldPlunoStatistics,
+                false, Algorithm.PREFIX_SPAN);
+        List<? extends StatisticsItem> newPlunoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.PLUNO);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.PLUNO, newPlunoStatistics,
+                false, Algorithm.PREFIX_SPAN);
+        List<? extends StatisticsItem> oldDptnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.DPTNO);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.DPTNO, oldDptnoStatistics,
+                false, Algorithm.PREFIX_SPAN);
+        List<? extends StatisticsItem> newDptnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.DPTNO);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.DPTNO, newDptnoStatistics,
+                false, Algorithm.PREFIX_SPAN);
+        List<? extends StatisticsItem> oldBndnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.BNDNO);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.BNDNO, oldBndnoStatistics,
+                false, Algorithm.PREFIX_SPAN);
+        List<? extends StatisticsItem> newBndnoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.BNDNO);
+        ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics,
+                false, Algorithm.PREFIX_SPAN);
+    }
+
+    private static void answerb2() {
+        PrefixSpanSolver prefixSpanSolver = new PrefixSpanSolver();
+        PrefixSpanStatisticsCollector statisticsCollector = new PrefixSpanStatisticsCollector();
+        prefixSpanSolver.setStatisticsCollector(statisticsCollector);
+        prefixSpanSolver.readData(RawDataType.OLD_DATA)
+                .solveIntegrated(ItemType.PLUNO, 2)
+                .solveIntegrated(ItemType.PLUNO, 4)
+                .solveIntegrated(ItemType.PLUNO, 8)
+                .solveIntegrated(ItemType.PLUNO, 16)
+                .solveIntegrated(ItemType.PLUNO, 32)
+                .solveIntegrated(ItemType.PLUNO, 64)
+                .solveIntegrated(ItemType.DPTNO, 2)
+                .solveIntegrated(ItemType.DPTNO, 4)
+                .solveIntegrated(ItemType.DPTNO, 8)
+                .solveIntegrated(ItemType.DPTNO, 16)
+                .solveIntegrated(ItemType.DPTNO, 32)
+                .solveIntegrated(ItemType.DPTNO, 64)
+                .solveIntegrated(ItemType.BNDNO, 2)
+                .solveIntegrated(ItemType.BNDNO, 4)
+                .solveIntegrated(ItemType.BNDNO, 8)
+                .solveIntegrated(ItemType.BNDNO, 16)
+                .solveIntegrated(ItemType.BNDNO, 32)
+                .solveIntegrated(ItemType.BNDNO, 64)
+                .cleanData().readData(RawDataType.NEW_DATA)
+                .solveIntegrated(ItemType.PLUNO, 2)
+                .solveIntegrated(ItemType.PLUNO, 4)
+                .solveIntegrated(ItemType.PLUNO, 8)
+                .solveIntegrated(ItemType.PLUNO, 16)
+                .solveIntegrated(ItemType.PLUNO, 32)
+                .solveIntegrated(ItemType.PLUNO, 64)
+                .solveIntegrated(ItemType.DPTNO, 2)
+                .solveIntegrated(ItemType.DPTNO, 4)
+                .solveIntegrated(ItemType.DPTNO, 8)
+                .solveIntegrated(ItemType.DPTNO, 16)
+                .solveIntegrated(ItemType.DPTNO, 32)
+                .solveIntegrated(ItemType.DPTNO, 64)
+                .solveIntegrated(ItemType.BNDNO, 2)
+                .solveIntegrated(ItemType.BNDNO, 4)
+                .solveIntegrated(ItemType.BNDNO, 8)
+                .solveIntegrated(ItemType.BNDNO, 16)
+                .solveIntegrated(ItemType.BNDNO, 32)
+                .solveIntegrated(ItemType.BNDNO, 64);
+
+        List<? extends StatisticsItem> statisticsItemList =
+                statisticsCollector.getStatisticsItemList();
+        for (StatisticsItem statisticsItem : statisticsItemList) {
+            logger.info(new GsonBuilder().create().toJson(statisticsItem));
+        }
+
+        List<? extends StatisticsItem> oldPlunoStatistics =
+                statisticsCollector.extractStatistics(RawDataType.OLD_DATA, ItemType.PLUNO);
+        ChartGenerator.generateCharts(RawDataType.OLD_DATA, ItemType.PLUNO, oldPlunoStatistics,
                 true, Algorithm.PREFIX_SPAN);
         List<? extends StatisticsItem> newPlunoStatistics =
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.PLUNO);
@@ -258,9 +331,6 @@ public class Answer {
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.BNDNO);
         ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics,
                 true, Algorithm.PREFIX_SPAN);
-    }
-
-    private static void answerb2() {
     }
 
 }

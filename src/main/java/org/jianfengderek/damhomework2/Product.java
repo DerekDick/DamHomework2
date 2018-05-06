@@ -1,11 +1,16 @@
 package org.jianfengderek.damhomework2;
 
 import com.google.gson.GsonBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 public class Product implements Serializable {
+
+    // For logging
+    private static final Logger logger = LoggerFactory.getLogger(Product.class);
 
     private String pluno;
 
@@ -63,6 +68,44 @@ public class Product implements Serializable {
     @Override
     public String toString() {
         return new GsonBuilder().create().toJson(this);
+    }
+
+    /**
+     * Returns the value of the item of {@code itemType}.
+     *
+     * @param itemType The type of the item.
+     * @return The value of the item of {@code itemType}.
+     */
+    public String item(ItemType itemType) {
+        String item = null;
+
+        switch (itemType) {
+            case PLUNO: {
+                item = pluno;
+
+                break;
+            }
+
+            case DPTNO: {
+                item = dptno;
+
+                break;
+            }
+
+            case BNDNO: {
+                item = bndno;
+
+                break;
+            }
+
+            default: {
+                logger.error("Illegal ItemType: " + itemType);
+
+                break;
+            }
+        }
+
+        return item;
     }
 
 }

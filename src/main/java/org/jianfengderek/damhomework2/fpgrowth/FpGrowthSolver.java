@@ -438,6 +438,51 @@ public class FpGrowthSolver {
         int totalNumber = trainingTransactionListMap.size();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(inputFilename))) {
             for (Map.Entry<String, List<Transaction>> entry : trainingTransactionListMap.entrySet()) {
+//                List<Transaction> transactionList = entry.getValue();
+//
+//                // Sort the transaction list by sldat
+//                Collections.sort(transactionList, new Comparator<Transaction>() {
+//
+//                    @Override
+//                    public int compare(Transaction o1, Transaction o2) {
+//                        return o1.getSldat().compareTo(o2.getSldat());
+//                    }
+//
+//                });
+//
+//                boolean empty = true;
+//                StringBuilder stringBuilder = new StringBuilder();
+//                for (Transaction transaction : transactionList) {
+//                    Set<String> itemSet = new HashSet<>();
+//                    for (Product product : transaction.getProductList()) {
+//                        String item = product.item(itemType);
+//                        if ((item != null) && !item.isEmpty()) {
+//                            empty = false;
+//                            // For the stupid format of raw data
+//                            if (ItemType.BNDNO == itemType) {
+//                                itemSet.add(String.valueOf(Double.valueOf(item).intValue()));
+//                            } else {
+//                                itemSet.add(item);
+//                            }
+//                        }
+//                    }
+//
+//                    for (String item : itemSet) {
+//                        stringBuilder.append(item).append(" ");
+//                    }
+//                    stringBuilder.append("-1 ");
+//                }
+//
+//                // If this line is empty
+//                if (empty) {
+//                    totalNumber--;
+//
+//                    continue;
+//                }
+//
+//                stringBuilder.append("-2\n");
+//                bufferedWriter.write(stringBuilder.toString());
+
                 List<Transaction> transactionList = entry.getValue();
 
                 List<Product> productList = new ArrayList<>();
@@ -486,6 +531,7 @@ public class FpGrowthSolver {
                         }
                     }
                 }
+
                 // If the line is empty, skip this line
                 if (empty) {
                     totalNumber--;
