@@ -183,7 +183,7 @@ public class PrefixSpanSolver {
 
             });
 
-            // Get the transaction list or training
+            // Get the transaction list for training
             List<Transaction> trainingTransactionList = new ArrayList<>();
             for (int i = 0; i < transactionList.size() * 0.6 - 1; i++) {
                 trainingTransactionList.add(transactionList.get(i));
