@@ -30,6 +30,10 @@ public class Answer {
             answerb1();
         } else if ("b2".equals(args[0])) {
             answerb2();
+        } else if ("c1".equals(args[0])) {
+            answerc1();
+        } else if ("c2".equals(args[0])) {
+            answerc2();
         } else {
             logger.warn("Illegal parameter.");
         }
@@ -331,6 +335,12 @@ public class Answer {
                 statisticsCollector.extractStatistics(RawDataType.NEW_DATA, ItemType.BNDNO);
         ChartGenerator.generateCharts(RawDataType.NEW_DATA, ItemType.BNDNO, newBndnoStatistics,
                 true, Algorithm.PREFIX_SPAN);
+    }
+
+    private static void answerc1() {
+    }
+
+    private static void answerc2() {
     }
 
 }
