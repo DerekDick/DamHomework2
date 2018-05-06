@@ -484,7 +484,7 @@ public class PrefixSpanSolver {
         try {
             String command = "java -jar spmf.jar run " +
                     "PrefixSpan " + inputFilename + " " + outputFilename + " " +
-                    String.format("%f", minsup * 100.0 / trainingTransactionListMap.size()) + "%";
+                    String.format("%f", minsup * 100.0 / totalNumber) + "%";
             logger.info("Executing the command: \"" + command + "\"");
             Process process = runtime.exec(command);
 
